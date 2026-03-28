@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>つぶくま</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #fef4f6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Kosugi Maru', 'Hiragino Maru Gothic Pro', 'ヒラギノ丸ゴ Pro', sans-serif;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* ========== SCENE ========== */
+    .scene {
+      position: relative;
+      width: 360px;
+      max-width: 100vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    /* ========== SPEECH BUBBLE ========== */
+    .bubble-wrap {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      min-height: 130px;
+      align-items: flex-end;
+      padding-bottom: 8px;
+    }
+
+    .bubble {
+      position: relative;
+      background: linear-gradient(135deg, #fff0f5 0%, #ffe4ef 100%);
+      border: 2.5px solid #f8b4ce;
+      border-radius: 28px;
+      padding: 18px 24px 18px 24px;
+      max-width: 300px;
+      width: 100%;
+      text-align: center;
+      box-shadow:
+        0 4px 20px rgba(255, 160, 200, 0.25),
+        inset 0 1px 0 rgba(255,255,255,0.8);
+      animation: bubblePop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    /* tail pointing down toward the character */
+    .bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-top: 16px solid #f8b4ce;
+    }
+
+    .bubble::before {
+      content: '';
+      position: absolute;
+      bottom: -13px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 14px solid #ffe4ef;
+      z-index: 1;
+    }
+
+    .bubble-text {
+      font-size: 17px;
+      line-height: 1.7;
+      color: #c06080;
+      letter-spacing: 0.04em;
+    }
+
+    .bubble-hint {
+      margin-top: 8px;
+      font-size: 11px;
+      color: #e8a0bb;
+      letter-spacing: 0.08em;
+    }
+
+    @keyframes bubblePop {
+      0% { opacity: 0; transform: scale(0.7) translateY(10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* ========== NAME INPUT ========== */
+    .name-input-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .name-input {
+      background: rgba(255,255,255,0.85);
+      border: 2px solid #f5a8c8;
+      border-radius: 999px;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-family: inherit;
+      color: #c06080;
+      text-align: center;
+      outline: none;
+      width: 180px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .name-input::placeholder {
+      color: #f0bcd0;
+    }
+
+    .name-input:focus {
+      border-color: #f080aa;
+      box-shadow: 0 0 0 3px rgba(240, 128, 170, 0.15);
+    }
+
+    .name-submit {
+      background: linear-gradient(135deg, #ffb3d0, #ff85ae);
+      border: none;
+      border-radius: 999px;
+      padding: 10px 28px;
+      font-size: 15px;
+      font-family: inherit;
+      color: #fff;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      box-shadow: 0 3px 12px rgba(255, 100, 160, 0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .name-submit:active {
+      transform: scale(0.95);
+      box-shadow: 0 1px 6px rgba(255, 100, 160, 0.2);
+    }
+
+    /* ========== CHARACTER ========== */
+    .character-wrap {
+      margin-top: 24px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .character-img {
+      width: 220px;
+      height: auto;
+      display: block;
+      animation: floatBob 3s ease-in-out infinite;
+      filter: drop-shadow(0 8px 20px rgba(200, 130, 160, 0.2));
+      transition: transform 0.15s;
+    }
+
+    .character-img:active {
+      transform: scale(0.95);
+    }
+
+    @keyframes floatBob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* ========== TAP HINT ========== */
+    .tap-hint {
+      margin-top: 16px;
+      font-size: 12px;
+      color: #e8b0c8;
+      letter-spacing: 0.1em;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    /* ========== DECORATIONS ========== */
+    .deco {
+      position: fixed;
+      pointer-events: none;
+      font-size: 20px;
+      opacity: 0.18;
+    }
+    .deco-1 { top: 6%; left: 5%; font-size: 28px; transform: rotate(-15deg); }
+    .deco-2 { top: 12%; right: 8%; font-size: 22px; transform: rotate(10deg); }
+    .deco-3 { bottom: 18%; left: 8%; font-size: 18px; transform: rotate(20deg); }
+    .deco-4 { bottom: 10%; right: 6%; font-size: 24px; transform: rotate(-10deg); }
+    .deco-5 { top: 40%; left: 3%; font-size: 16px; }
+    .deco-6 { top: 50%; right: 4%; font-size: 14px; transform: rotate(25deg); }
+
+    /* ========== HIDDEN ========== */
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Decorations -->
+  <div class="deco deco-1">🌸</div>
+  <div class="deco deco-2">✨</div>
+  <div class="deco deco-3">🌷</div>
+  <div class="deco deco-4">🌸</div>
+  <div class="deco deco-5">✿</div>
+  <div class="deco deco-6">🌼</div>
+
+  <div class="scene">
+    <!-- Bubble area -->
+    <div class="bubble-wrap">
+      <div class="bubble" id="bubble">
+        <div class="bubble-text" id="bubble-text">ぼくはつぶくま</div>
+        <div class="bubble-hint" id="bubble-hint">タップしてね</div>
+        <!-- Name input (hidden initially) -->
+        <div class="name-input-wrap hidden" id="name-input-wrap">
+          <input class="name-input" id="name-input" type="text" placeholder="なまえ" maxlength="10" />
+          <button class="name-submit" id="name-submit">きめた！</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Character -->
+    <div class="character-wrap" id="character-wrap">
+      <img
+        class="character-img"
+        id="character-img"
+        src="tubukuma.png"
+        alt="つぶくま"
+        onerror="this.style.display='none'; document.getElementById('char-fallback').style.display='block';"
+      />
+      <div id="char-fallback" style="display:none; font-size:120px; text-align:center; line-height:1;">🐻</div>
+    </div>
+
+    <div class="tap-hint" id="tap-hint">タップしてね</div>
+  </div>
+
+  <script>
+    // ========== STATE ==========
+    const PHASE = {
+      INTRO_1: 'intro_1',       // ぼくはつぶくま
+      INTRO_2: 'intro_2',       // きみのなまえは？
+      INTRO_3: 'intro_3',       // そうなんだ、〇〇ちゃん
+      INTRO_4: 'intro_4',       // よろしくね！
+      RANDOM:  'random',        // ランダムセリフ
+    };
+
+    const RANDOM_LINES = [
+      'ご縁マーケットに\n参加したんだ',
+      'bean jamおねーちゃんには\nやさしくしてもらってるんだ',
+      'ごはんだいすき、\n君は？',
+    ];
+
+    let currentPhase = PHASE.INTRO_1;
+    let userName = '';
+    let lastRandomIndex = -1;
+
+    // ========== ELEMENTS ==========
+    const bubbleText   = document.getElementById('bubble-text');
+    const bubbleHint   = document.getElementById('bubble-hint');
+    const nameInputWrap = document.getElementById('name-input-wrap');
+    const nameInput    = document.getElementById('name-input');
+    const nameSubmit   = document.getElementById('name-submit');
+    const characterWrap = document.getElementById('character-wrap');
+    const tapHint      = document.getElementById('tap-hint');
+    const bubble       = document.getElementById('bubble');
+
+    // ========== HELPERS ==========
+    function setBubble(text, showHint = true, showInput = false) {
+      // Restart animation
+      bubble.style.animation = 'none';
+      bubble.offsetHeight; // reflow
+      bubble.style.animation = '';
+
+      bubbleText.textContent = text;
+      bubbleHint.style.display = showHint ? '' : 'none';
+      if (showInput) {
+        nameInputWrap.classList.remove('hidden');
+        tapHint.style.display = 'none';
+        setTimeout(() => nameInput.focus(), 300);
+      } else {
+        nameInputWrap.classList.add('hidden');
+        tapHint.style.display = '';
+      }
+    }
+
+    function pickRandom() {
+      let idx;
+      do {
+        idx = Math.floor(Math.random() * RANDOM_LINES.length);
+      } while (RANDOM_LINES.length > 1 && idx === lastRandomIndex);
+      lastRandomIndex = idx;
+      return RANDOM_LINES[idx];
+    }
+
+    // ========== ADVANCE DIALOGUE ==========
+    function advance() {
+      if (currentPhase === PHASE.INTRO_2) return; // waiting for name
+
+      if (currentPhase === PHASE.INTRO_1) {
+        currentPhase = PHASE.INTRO_2;
+        setBubble('きみのなまえは？', false, true);
+        return;
+      }
+
+      if (currentPhase === PHASE.INTRO_3) {
+        currentPhase = PHASE.INTRO_4;
+        setBubble('よろしくね！', true);
+        return;
+      }
+
+      if (currentPhase === PHASE.INTRO_4) {
+        currentPhase = PHASE.RANDOM;
+        setBubble(pickRandom(), true);
+        return;
+      }
+
+      if (currentPhase === PHASE.RANDOM) {
+        setBubble(pickRandom(), true);
+        return;
+      }
+    }
+
+    // ========== NAME SUBMIT ==========
+    function submitName() {
+      const val = nameInput.value.trim();
+      if (!val) {
+        nameInput.focus();
+        return;
+      }
+      userName = val;
+      nameInput.blur();
+      currentPhase = PHASE.INTRO_3;
+      setBubble(`そうなんだ、${userName}ちゃんっていうんだね。`, true);
+    }
+
+    nameSubmit.addEventListener('click', submitName);
+    nameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') submitName();
+    });
+
+    // ========== TAP / CLICK ==========
+    characterWrap.addEventListener('click', advance);
+    bubble.addEventListener('click', (e) => {
+      // Don't advance if clicking inside name input area
+      if (nameInputWrap.contains(e.target)) return;
+      advance();
+    });
+
+    // Init
+    setBubble('ぼくはつぶくま', true);
+  </script>
+</body>
+</html>
